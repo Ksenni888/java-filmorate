@@ -17,7 +17,7 @@ public class FilmController {
     private final HashMap<Integer, Film> films = new HashMap<>();
     private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private int unicId;
-    private final String DATE = "1895-12-28";
+    private static final String DATE = "1895-12-28";
 
     @GetMapping
     public List<Film> getFilms() {
