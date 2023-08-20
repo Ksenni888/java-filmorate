@@ -15,7 +15,7 @@ import java.util.List;
 @RequestMapping("/films")
 public class FilmController {
     private final HashMap<Integer, Film> films = new HashMap<>();
-    private final static Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private int unicId;
 
     @GetMapping
