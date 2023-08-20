@@ -17,6 +17,7 @@ public class FilmController {
     private final HashMap<Integer, Film> films = new HashMap<>();
     private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private int unicId;
+    private final String DATE = "1895-12-28";
 
     @GetMapping
     public List<Film> getFilms() {
@@ -26,44 +27,38 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
 
-        if (film.getId() == 0) {
-            film.setId(generateId());
-
-        } else {
-            log.warn("id должен быть пустым");
-            throw new ValidationException("id должен быть пустым");
+        if (film.getId() != 0) {
+            log.warn("ID must be empty");
+            throw new ValidationException("ID must be empty");
         }
 
-
-        if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
-            log.warn("Время релиза не раньше 28.12.1895");
-            throw new ValidationException("Время релиза не раньше 28.12.1895");
-
-        } else {
-            films.put(film.getId(), film);
-            log.info("Записан фильм {}", film);
-            return film;
+        if (film.getReleaseDate().isBefore(LocalDate.parse(DATE))) {
+            log.warn("Time of release must be after" + DATE);
+            throw new ValidationException("Time of release must be after" + DATE);
         }
+
+        film.setId(generateId());
+        films.put(film.getId(), film);
+        log.info("The film is recorded {}", film);
+        return film;
     }
-
 
     @PutMapping
     public Film rewriteFilm(@Valid @RequestBody Film film) {
         if (!films.containsKey(film.getId())) {
-            log.warn("Такого фильма нет в базе");
-            throw new ValidationException("Такого фильма нет в базе");
-
-        } else if (film.getReleaseDate().isBefore(LocalDate.parse("1895-12-28"))) {
-            log.warn("Время релиза не раньше 28.12.1895");
-            throw new ValidationException("Время релиза не раньше 28.12.1895");
-
-        } else {
-            films.replace(film.getId(), film);
-            log.info("Информация по фильму обновлена {}", film);
-            return film;
+            log.warn("There is no such film in the database");
+            throw new ValidationException("There is no such film in the database");
         }
-    }
 
+        if (film.getReleaseDate().isBefore(LocalDate.parse(DATE))) {
+            log.warn("Time of release must be after" + DATE);
+            throw new ValidationException("Time of release must be after" + DATE);
+        }
+
+        films.replace(film.getId(), film);
+        log.info("Info about film updated {}", film);
+        return film;
+    }
 
     private int generateId() {
         return ++unicId;

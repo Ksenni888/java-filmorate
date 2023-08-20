@@ -8,11 +8,11 @@ import java.time.LocalDate;
 @Data
 public class Film {
     private int id;
-    @NotBlank(message = "Имя не может быть пустым")
+    @NotBlank(message = "The name cannot be empty")
     private String name;
-    @Size(max = 200, message = "Описание должно быть не более 200 символов")
+    @Size(max = 200, message = "The description should be no more than 200 characters")
     private String description;
     private LocalDate releaseDate;
-    @Positive(message = "Значение должно быть положительным")
+    @Positive(message = "The value must be positive")
     private int duration;
 }

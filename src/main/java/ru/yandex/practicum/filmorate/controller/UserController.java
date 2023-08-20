@@ -9,12 +9,13 @@ import ru.yandex.practicum.filmorate.model.User;
 import javax.validation.Valid;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    HashMap<Integer, User> users = new HashMap<>();
+    private final Map<Integer, User> users = new HashMap<>();
     private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private int unUserId;
 
@@ -26,41 +27,42 @@ public class UserController {
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         if (user.getId() != 0) {
-            log.warn("id должен быть пустым");
-            throw new ValidationException("id должен быть пустым");
-
-        } else if (user.getLogin().contains(" ")) {
-            log.warn("Логин не может содержать пробелы");
-            throw new ValidationException("Логин не может содержать пробелы");
-        } else {
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            user.setId(generateUserId());
-            users.put(user.getId(), user);
-            log.info("Пользователь добавлен в базу {}", user);
-            return user;
+            log.warn("ID must be empty");
+            throw new ValidationException("ID must be empty");
         }
+
+        if (user.getLogin().contains(" ")) {
+            log.warn("The login cannot contain spaces");
+            throw new ValidationException("The login cannot contain spaces");
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        user.setId(generateUserId());
+        users.put(user.getId(), user);
+        log.info("The user has been added to the database {}", user);
+        return user;
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
-            log.warn("Такого пользователя нет в базе");
-            throw new ValidationException("Такого пользователя нет в базе");
-
-        } else if (user.getLogin().contains(" ")) {
-            log.warn("Логин не может содержать пробелы");
-            throw new ValidationException("Логин не может содержать пробелы");
-
-        } else {
-            if (user.getName() == null || user.getName().isBlank()) {
-                user.setName(user.getLogin());
-            }
-            users.put(user.getId(), user);
-            log.info("Информация о пользователе обновлена {}", user);
-            return user;
+            log.warn("There is no such user in the database");
+            throw new ValidationException("There is no such user in the database");
         }
+
+        if (user.getLogin().contains(" ")) {
+            log.warn("The login cannot contain spaces");
+            throw new ValidationException("The login cannot contain spaces");
+        }
+
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        users.put(user.getId(), user);
+        log.info("User information has been updated {}", user);
+        return user;
     }
 
     private int generateUserId() {
