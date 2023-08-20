@@ -43,7 +43,6 @@ public class UserController {
         }
     }
 
-
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         if (!users.containsKey(user.getId())) {
@@ -63,7 +62,6 @@ public class UserController {
             return user;
         }
     }
-
 
     private int generateUserId() {
         return ++unUserId;
