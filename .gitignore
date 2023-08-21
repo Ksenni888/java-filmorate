@@ -9,10 +9,17 @@
 *.rar
 hs_err_pid*
 out/
+HELP.md
 target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
+.mvn/
+**/src/main/**/target/
+**/src/test/**/target/
+mvnw
+mvnw.cmd
+.cmd
 
 ### STS ###
 .apt_generated
@@ -28,6 +35,11 @@ target/
 *.iws
 *.iml
 *.ipr
+/*/out
+/out
+/*/build
+/build
+.DS_Store
 
 ### NetBeans ###
 /nbproject/private/
@@ -41,6 +53,11 @@ build/
 
 ### VS Code ###
 .vscode/
-
 *.db
 db/*
+
+# BlueJ files
+*.ctxt
+
+# Mobile Tools for Java (J2ME)
+.mtj.tmp/
