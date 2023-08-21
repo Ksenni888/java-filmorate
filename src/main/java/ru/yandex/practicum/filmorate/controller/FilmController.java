@@ -17,7 +17,7 @@ public class FilmController {
     private final HashMap<Integer, Film> films = new HashMap<>();
     private final Logger log = LoggerFactory.getLogger(FilmController.class);
     private int unicId;
-    private static final String DATE = "1895-12-28";
+    private static final String FILM_BIRTHDAY = "1895-12-28";
 
     @GetMapping
     public List<Film> getFilms() {
@@ -32,9 +32,9 @@ public class FilmController {
             throw new ValidationException("ID must be empty");
         }
 
-        if (film.getReleaseDate().isBefore(LocalDate.parse(DATE))) {
-            log.warn("Time of release must be after" + DATE);
-            throw new ValidationException("Time of release must be after" + DATE);
+        if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
+            log.warn("Time of release must be after" + FILM_BIRTHDAY);
+            throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
         }
 
         film.setId(generateId());
@@ -50,9 +50,9 @@ public class FilmController {
             throw new ValidationException("There is no such film in the database");
         }
 
-        if (film.getReleaseDate().isBefore(LocalDate.parse(DATE))) {
-            log.warn("Time of release must be after" + DATE);
-            throw new ValidationException("Time of release must be after" + DATE);
+        if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
+            log.warn("Time of release must be after" + FILM_BIRTHDAY);
+            throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
         }
 
         films.replace(film.getId(), film);
