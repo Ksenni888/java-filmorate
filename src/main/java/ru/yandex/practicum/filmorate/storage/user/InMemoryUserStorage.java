@@ -21,8 +21,13 @@ public class InMemoryUserStorage implements UserStorage {
     private final Map<Integer, User> users = new HashMap<>();
     private int unUserId;
 
-    public List<User> findAllUsers() {return List.copyOf(users.values());}
-    public Map<Integer, User> findAllUsersHashMap() {return getUsers();}
+    public List<User> findAllUsers() {
+        return List.copyOf(users.values());
+    }
+
+    public Map<Integer, User> findAllUsersHashMap() {
+        return getUsers();
+    }
 
     public User createUser(User user) {
         if (user.getId() != 0) {
@@ -55,5 +60,7 @@ public class InMemoryUserStorage implements UserStorage {
         return user;
     }
 
-    private int generateUserId() {return ++unUserId;}
+    private int generateUserId() {
+        return ++unUserId;
+    }
 }

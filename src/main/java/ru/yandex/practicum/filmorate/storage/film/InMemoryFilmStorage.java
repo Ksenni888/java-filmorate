@@ -22,9 +22,13 @@ public class InMemoryFilmStorage implements FilmStorage {
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int unicId;
 
-    public List<Film> findAllFilms() {return List.copyOf(films.values());}
+    public List<Film> findAllFilms() {
+        return List.copyOf(films.values());
+    }
 
-    public Map<Integer, Film> findAllFilmsHashMap() {return getFilms();}
+    public Map<Integer, Film> findAllFilmsHashMap() {
+        return getFilms();
+    }
 
     public Film create(Film film) {
         if (film.getId() != 0) {
@@ -51,5 +55,7 @@ public class InMemoryFilmStorage implements FilmStorage {
         return film;
     }
 
-    private int generateId() {return ++unicId;}
+    private int generateId() {
+        return ++unicId;
+    }
 }
