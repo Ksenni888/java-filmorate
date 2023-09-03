@@ -19,25 +19,24 @@ import java.util.Map;
 public class InMemoryFilmStorage implements FilmStorage {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private static final String FILM_BIRTHDAY = "1895-12-28";
-
     private final HashMap<Integer, Film> films = new HashMap<>();
     private int unicId;
 
     public List<Film> findAllFilms() {
         return List.copyOf(films.values());
     }
-    public Map<Integer, Film> findAllFilmsHashMap() {return getFilms();}
+
+    public Map<Integer, Film> findAllFilmsHashMap() {
+        return getFilms();
+    }
 
     public Film create(Film film) {
-
         if (film.getId() != 0) {
             throw new ValidationException("ID must be empty");
         }
-
         if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
             throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
         }
-
         film.setId(generateId());
         films.put(film.getId(), film);
         log.info("The film is recorded {}", film);
@@ -48,11 +47,9 @@ public class InMemoryFilmStorage implements FilmStorage {
         if (!films.containsKey(film.getId())) {
             throw new ObjectNotFoundException("There is no such film in the database");
         }
-
         if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
             throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
         }
-
         films.replace(film.getId(), film);
         log.info("Info about film updated {}", film);
         return film;

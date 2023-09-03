@@ -30,15 +30,12 @@ public class InMemoryUserStorage implements UserStorage {
         if (user.getId() != 0) {
             throw new ValidationException("ID must be empty");
         }
-
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("The login cannot contain spaces");
         }
-
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
-
         user.setId(generateUserId());
         users.put(user.getId(), user);
         log.info("The user has been added to the database {}", user);
@@ -49,11 +46,9 @@ public class InMemoryUserStorage implements UserStorage {
         if (!users.containsKey(user.getId())) {
             throw new ObjectNotFoundException("There is no such user in the database");
         }
-
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("The login cannot contain spaces");
         }
-
         if (user.getName() == null || user.getName().isBlank()) {
             user.setName(user.getLogin());
         }
