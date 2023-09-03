@@ -6,11 +6,8 @@ import java.util.List;
 import java.util.Map;
 
 public interface UserStorage {
-
     public List<User> findAllUsers();
-
     public User createUser(User user);
-
     public User updateUser(User user);
     public Map<Integer, User> findAllUsersHashMap();
 
