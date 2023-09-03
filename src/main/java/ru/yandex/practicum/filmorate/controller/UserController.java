@@ -22,9 +22,9 @@ import java.util.Map;
 @RestController
 @RequestMapping("/users")
 public class UserController {
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
     private final UserStorage userStorage;
-    private static final Logger log = LoggerFactory.getLogger(UserController.class);
 
     public UserController(UserService userService, UserStorage userStorage) {
         this.userService = userService;
@@ -39,14 +39,14 @@ public class UserController {
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
         log.info("Get information about user by id=" + id);
-        return userService.getUserByIdService(id);
+        return userService.getUserById(id);
     }
 
     @GetMapping("/{id}/friends")
     @ResponseBody
     public List<User> getListOfFriends(@PathVariable Integer id) {
         log.info("List of friends user id=" + id);
-        return userService.getListOfFriendsService(id);
+        return userService.getListOfFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
@@ -76,7 +76,7 @@ public class UserController {
         int id = Integer.parseInt(pathVarsMap.get("id"));
         int friendId = Integer.parseInt(pathVarsMap.get("friendId"));
         log.info("Add friend");
-        return userService.addFriendsService(id, friendId);
+        return userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
@@ -85,8 +85,6 @@ public class UserController {
         int id = Integer.parseInt(pathVarsMap.get("id"));
         int friendId = Integer.parseInt(pathVarsMap.get("friendId"));
         log.info("Delete friends by id");
-        userService.deleteFriendsByIdService(id, friendId);
+        userService.deleteFriendsById(id, friendId);
     }
-
-
 }

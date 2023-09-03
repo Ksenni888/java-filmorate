@@ -13,26 +13,25 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+@Getter
 @Component
 public class InMemoryUserStorage implements UserStorage {
 
-    @Getter
+    private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final Map<Integer, User> users = new HashMap<>();
-    private final Logger log = LoggerFactory.getLogger(UserController.class);
     private int unUserId;
 
     public List<User> findAllUsers() {
         return List.copyOf(users.values());
     }
+    public Map<Integer, User> findAllUsersHashMap() {return getUsers();}
 
     public User createUser(User user) {
         if (user.getId() != 0) {
-            log.warn("ID must be empty");
             throw new ValidationException("ID must be empty");
         }
 
         if (user.getLogin().contains(" ")) {
-            log.warn("The login cannot contain spaces");
             throw new ValidationException("The login cannot contain spaces");
         }
 
@@ -48,12 +47,10 @@ public class InMemoryUserStorage implements UserStorage {
 
     public User updateUser(User user) {
         if (!users.containsKey(user.getId())) {
-            log.warn("There is no such user in the database");
             throw new ObjectNotFoundException("There is no such user in the database");
         }
 
         if (user.getLogin().contains(" ")) {
-            log.warn("The login cannot contain spaces");
             throw new ValidationException("The login cannot contain spaces");
         }
 
@@ -68,6 +65,4 @@ public class InMemoryUserStorage implements UserStorage {
     private int generateUserId() {
         return ++unUserId;
     }
-
-
 }

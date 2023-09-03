@@ -12,29 +12,29 @@ import ru.yandex.practicum.filmorate.model.Film;
 import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
+@Getter
 @Component
 public class InMemoryFilmStorage implements FilmStorage {
-
-    @Getter
-    private final HashMap<Integer, Film> films = new HashMap<>();
-    private final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private int unicId;
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private static final String FILM_BIRTHDAY = "1895-12-28";
+
+    private final HashMap<Integer, Film> films = new HashMap<>();
+    private int unicId;
 
     public List<Film> findAllFilms() {
         return List.copyOf(films.values());
     }
+    public Map<Integer, Film> findAllFilmsHashMap() {return getFilms();}
 
     public Film create(Film film) {
 
         if (film.getId() != 0) {
-            log.warn("ID must be empty");
             throw new ValidationException("ID must be empty");
         }
 
         if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
-            log.warn("Time of release must be after" + FILM_BIRTHDAY);
             throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
         }
 
@@ -46,12 +46,10 @@ public class InMemoryFilmStorage implements FilmStorage {
 
     public Film rewriteFilm(Film film) {
         if (!films.containsKey(film.getId())) {
-            log.warn("There is no such film in the database");
             throw new ObjectNotFoundException("There is no such film in the database");
         }
 
         if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
-            log.warn("Time of release must be after" + FILM_BIRTHDAY);
             throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
         }
 

@@ -24,9 +24,9 @@ import java.util.Set;
 @RestController
 @RequestMapping("/films")
 public class FilmController {
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
     private final FilmStorage filmStorage;
-    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
 
     public FilmController(FilmService filmService, FilmStorage filmStorage) {
         this.filmService = filmService;
@@ -41,7 +41,7 @@ public class FilmController {
     @GetMapping("/{id}")
     public Film getFilmsById(@PathVariable Integer id) {
         log.info("Get information about film id=" + id);
-        return filmService.getFilmsByIdService(id);
+        return filmService.getFilmsById(id);
     }
 
     @PostMapping
@@ -56,7 +56,7 @@ public class FilmController {
         int id = Integer.parseInt(pathVarsMap.get("id"));
         int userId = Integer.parseInt(pathVarsMap.get("userId"));
         log.info("Like the movie");
-        return filmService.likesFilmService(id, userId);
+        return filmService.likesFilm(id, userId);
     }
 
     @PutMapping
@@ -77,10 +77,9 @@ public class FilmController {
     @GetMapping("/popular")
     @ResponseBody
     public List<Film> bestFilms(@RequestParam(defaultValue = "10", required = false) Integer count) {
-        if (count == null) return filmService.bestFilmsService(10);
+        if (count == null) return filmService.bestFilms(10);
         log.info("Show best films");
-        return filmService.bestFilmsService(count);
+        return filmService.bestFilms(count);
     }
-
 }
 
