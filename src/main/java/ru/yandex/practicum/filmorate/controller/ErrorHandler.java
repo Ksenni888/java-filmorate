@@ -19,28 +19,28 @@ public class ErrorHandler {
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public ErrorResponse handleObjectNotFoundException(final ObjectNotFoundException e) {
-        log.warn(e.getMessage());
+        log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ErrorResponse handleValidationException(final ValidationException e) {
-        log.warn(e.getMessage());
+        log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public ErrorResponse handleException(final Exception e) {
-        log.warn(e.getMessage());
+        log.warn(e.getMessage(), e);
         return new ErrorResponse("Type of id is wrong");
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public ErrorResponse handleNoInformationFoundException(final NoInformationFoundException e) {
-        log.warn(e.getMessage());
+        log.warn(e.getMessage(), e);
         return new ErrorResponse(e.getMessage());
     }
 }
