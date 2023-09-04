@@ -129,14 +129,14 @@ public class UserService {
         if (!userStorage.containsUser(otherId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", otherId));
         }
-        List<Integer> NumberCommonFriends = new ArrayList<>();
+        List<Integer> numberCommonFriends = new ArrayList<>();
         for (Integer friend : userStorage.findById(id).getFriendIds()) {
             if (userStorage.findById(otherId).getFriendIds().contains(friend)) {
-                NumberCommonFriends.add(friend);
+                numberCommonFriends.add(friend);
             }
         }
         List<User> commonFriends = new ArrayList<>();
-        for (Integer f : NumberCommonFriends) {
+        for (Integer f : numberCommonFriends) {
             if (userStorage.containsUser(f)) {
                 commonFriends.add(userStorage.findById(f));
             }
