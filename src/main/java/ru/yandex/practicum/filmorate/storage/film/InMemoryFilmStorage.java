@@ -23,10 +23,6 @@ public class InMemoryFilmStorage implements FilmStorage {
         return List.copyOf(films.values());
     }
 
-    public Map<Integer, Film> getAllFilms() {
-        return getFilms();
-    }
-
     public Film create(Film film) {
         film.setId(generateId());
         films.put(film.getId(), film);

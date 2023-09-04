@@ -23,10 +23,6 @@ public class InMemoryUserStorage implements UserStorage {
         return List.copyOf(users.values());
     }
 
-    public Map<Integer, User> getAllUsers() {
-        return getUsers();
-    }
-
     public User createUser(User user) {
         user.setId(generateUserId());
         users.put(user.getId(), user);
