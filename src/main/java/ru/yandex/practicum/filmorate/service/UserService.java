@@ -75,7 +75,7 @@ public class UserService {
         userStorage.findById(friendId).getFriendIds().add(id);
 
         List<User> userAddFriend = new ArrayList<>();
-        for (User u : userStorage.getAllUsers().values()) {
+        for (User u : userStorage.findAllUsers()) {
             if (u.getId() == friendId) {
                 userAddFriend.add(u);
             }
@@ -102,7 +102,7 @@ public class UserService {
         if (id <= 0) {
             throw new ObjectNotFoundException("User's and friend's id must be over 0");
         }
-        if (userStorage.getAllUsers().isEmpty()) {
+        if (userStorage.findAllUsers().isEmpty()) {
             return null;
         }
         if (!userStorage.containsUser(id)) {
