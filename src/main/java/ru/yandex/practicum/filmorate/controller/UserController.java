@@ -13,47 +13,41 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.UserService;
-import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
-    private final UserStorage userStorage;
 
-    public UserController(UserService userService, UserStorage userStorage) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.userStorage = userStorage;
     }
 
     @GetMapping
     public List<User> findAllUsers() {
-        return userStorage.findAllUsers();
+        return userService.findAllUsers();
     }
 
     @GetMapping("/{id}")
     public User getUserById(@PathVariable Integer id) {
         log.info("Get information about user by id=" + id);
-        return userService.getUserById(id);
+        return userService.findById(id);
     }
 
     @GetMapping("/{id}/friends")
     @ResponseBody
-    public List<User> getListOfFriends(@PathVariable Integer id) {
+    public List<User> getFriends(@PathVariable Integer id) {
         log.info("List of friends user id=" + id);
-        return userService.getListOfFriends(id);
+        return userService.getFriends(id);
     }
 
     @GetMapping("/{id}/friends/common/{otherId}")
     @ResponseBody
-    public List<User> commonFriends(@PathVariable Map<String, String> pathVarsMap) {
-        int id = Integer.parseInt(pathVarsMap.get("id"));
-        int otherId = Integer.parseInt(pathVarsMap.get("otherId"));
+    public List<User> commonFriends(@PathVariable Integer id, @PathVariable Integer otherId) {
         log.info("Common friends");
         return userService.commonFriends(id, otherId);
     }
@@ -61,29 +55,25 @@ public class UserController {
     @PostMapping
     public User createUser(@Valid @RequestBody User user) {
         log.info("Create user");
-        return userStorage.createUser(user);
+        return userService.createUser(user);
     }
 
     @PutMapping
     public User updateUser(@Valid @RequestBody User user) {
         log.info("Update user");
-        return userStorage.updateUser(user);
+        return userService.updateUser(user);
     }
 
     @PutMapping("/{id}/friends/{friendId}")
     @ResponseBody
-    public List<User> addFriends(@PathVariable Map<String, String> pathVarsMap) {
-        int id = Integer.parseInt(pathVarsMap.get("id"));
-        int friendId = Integer.parseInt(pathVarsMap.get("friendId"));
+    public List<User> addFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Add friend");
         return userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
     @ResponseBody
-    public void deleteFriendsById(@PathVariable Map<String, String> pathVarsMap) {
-        int id = Integer.parseInt(pathVarsMap.get("id"));
-        int friendId = Integer.parseInt(pathVarsMap.get("friendId"));
+    public void deleteFriendsById(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Delete friends by id");
         userService.deleteFriendsById(id, friendId);
     }

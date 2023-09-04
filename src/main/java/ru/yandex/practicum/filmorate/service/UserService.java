@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.NoInformationFoundException;
+import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -22,32 +23,59 @@ public class UserService {
         this.userStorage = userStorage;
     }
 
-    public User getUserById(Integer id) {
-        for (User u : userStorage.findAllUsers()) {
-            if (u.getId() == id) {
-                log.info("Information about user id=" + id + ":" + u);
-                return u;
-            }
+    public User createUser(User user) {
+        if (user.getId() != 0) {
+            throw new ValidationException("ID must be empty");
         }
-        throw new ObjectNotFoundException(String.format("User c id=%d not exist", id));
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("The login cannot contain spaces");
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        return userStorage.createUser(user);
+    }
+
+    public User updateUser(User user) {
+        if (!userStorage.containsUser(user.getId())) {
+            throw new ObjectNotFoundException("There is no such user in the database");
+        }
+        if (user.getLogin().contains(" ")) {
+            throw new ValidationException("The login cannot contain spaces");
+        }
+        if (user.getName() == null || user.getName().isBlank()) {
+            user.setName(user.getLogin());
+        }
+        return userStorage.updateUser(user);
+    }
+
+    public List<User> findAllUsers() {
+        return userStorage.findAllUsers();
+    }
+
+    public User findById(Integer id) {
+        if (!userStorage.containsUser(id)) {
+            throw new ObjectNotFoundException(String.format("User c id=%d not exist", id));
+        }
+        return userStorage.findById(id);
     }
 
     public List<User> addFriends(Integer id, Integer friendId) {
         if (id <= 0 || friendId <= 0) {
             throw new ObjectNotFoundException("User's and friend's id must be over 0");
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(id)) {
+        if (!userStorage.containsUser(id)) {
             throw new NoInformationFoundException(String.format("User c id=%d not exist", id));
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(friendId)) {
+        if (!userStorage.containsUser(friendId)) {
             throw new NoInformationFoundException(String.format("User c id=%d not exist", friendId));
         }
 
-        userStorage.findAllUsersHashMap().get(id).getFriendsId().add(friendId);
-        userStorage.findAllUsersHashMap().get(friendId).getFriendsId().add(id);
+        userStorage.findById(id).getFriendIds().add(friendId);
+        userStorage.findById(friendId).getFriendIds().add(id);
 
         List<User> userAddFriend = new ArrayList<>();
-        for (User u : userStorage.findAllUsersHashMap().values()) {
+        for (User u : userStorage.getAllUsers().values()) {
             if (u.getId() == friendId) {
                 userAddFriend.add(u);
             }
@@ -60,60 +88,60 @@ public class UserService {
         if (id <= 0 || friendId <= 0) {
             throw new ObjectNotFoundException("User's and friend's id must be over 0");
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(id)) {
+        if (!userStorage.containsUser(id)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", id));
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(friendId)) {
+        if (!userStorage.containsUser(friendId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", friendId));
         }
-        userStorage.findAllUsersHashMap().get(id).getFriendsId().remove(friendId);
-        userStorage.findAllUsersHashMap().get(friendId).getFriendsId().remove(id);
+        userStorage.findById(id).getFriendIds().remove(friendId);
+        userStorage.findById(friendId).getFriendIds().remove(id);
     }
 
-    public List<User> getListOfFriends(Integer id) {
+    public List<User> getFriends(Integer id) {
         if (id <= 0) {
             throw new ObjectNotFoundException("User's and friend's id must be over 0");
         }
-        if (userStorage.findAllUsersHashMap().isEmpty()) {
+        if (userStorage.getAllUsers().isEmpty()) {
             return null;
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(id)) {
+        if (!userStorage.containsUser(id)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", id));
         }
 
-        List<User> userFriendsList = new ArrayList<>();
-        for (Integer i : userStorage.findAllUsersHashMap().get(id).getFriendsId()) {
-            if (userStorage.findAllUsersHashMap().containsKey(i)) {
-                userFriendsList.add(userStorage.findAllUsersHashMap().get(i));
+        List<User> userFriends = new ArrayList<>();
+        for (Integer i : userStorage.findById(id).getFriendIds()) {
+            if (userStorage.containsUser(i)) {
+                userFriends.add(userStorage.findById(i));
             }
         }
         log.info("List of friends done");
-        return userFriendsList;
+        return userFriends;
     }
 
     public List<User> commonFriends(Integer id, Integer otherId) {
         if (id <= 0) {
             throw new ObjectNotFoundException("User's and friend's id must be over 0");
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(id)) {
+        if (!userStorage.containsUser(id)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", id));
         }
-        if (!userStorage.findAllUsersHashMap().containsKey(otherId)) {
+        if (!userStorage.containsUser(otherId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", otherId));
         }
         List<Integer> listNumberCommonFriends = new ArrayList<>();
-        for (Integer friend : userStorage.findAllUsersHashMap().get(id).getFriendsId()) {
-            if (userStorage.findAllUsersHashMap().get(otherId).getFriendsId().contains(friend)) {
+        for (Integer friend : userStorage.findById(id).getFriendIds()) {
+            if (userStorage.findById(otherId).getFriendIds().contains(friend)) {
                 listNumberCommonFriends.add(friend);
             }
         }
-        List<User> listCommonFriends = new ArrayList<>();
+        List<User> CommonFriends = new ArrayList<>();
         for (Integer f : listNumberCommonFriends) {
-            if (userStorage.findAllUsersHashMap().containsKey(f)) {
-                listCommonFriends.add(userStorage.findAllUsersHashMap().get(f));
+            if (userStorage.containsUser(f)) {
+                CommonFriends.add(userStorage.findById(f));
             }
         }
         log.info("List of common friends done");
-        return listCommonFriends;
+        return CommonFriends;
     }
 }

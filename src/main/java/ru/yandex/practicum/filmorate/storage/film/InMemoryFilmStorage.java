@@ -5,11 +5,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 import ru.yandex.practicum.filmorate.controller.FilmController;
-import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
-import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
 
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,17 +23,11 @@ public class InMemoryFilmStorage implements FilmStorage {
         return List.copyOf(films.values());
     }
 
-    public Map<Integer, Film> findAllFilmsHashMap() {
+    public Map<Integer, Film> getAllFilms() {
         return getFilms();
     }
 
     public Film create(Film film) {
-        if (film.getId() != 0) {
-            throw new ValidationException("ID must be empty");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
-            throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
-        }
         film.setId(generateId());
         films.put(film.getId(), film);
         log.info("The film is recorded {}", film);
@@ -44,15 +35,17 @@ public class InMemoryFilmStorage implements FilmStorage {
     }
 
     public Film rewriteFilm(Film film) {
-        if (!films.containsKey(film.getId())) {
-            throw new ObjectNotFoundException("There is no such film in the database");
-        }
-        if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
-            throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
-        }
         films.replace(film.getId(), film);
         log.info("Info about film updated {}", film);
         return film;
+    }
+
+    public Film findById(Integer id) {
+        return films.get(id);
+    }
+
+    public boolean containsFilm(Integer id) {
+        return films.containsKey(id);
     }
 
     private int generateId() {

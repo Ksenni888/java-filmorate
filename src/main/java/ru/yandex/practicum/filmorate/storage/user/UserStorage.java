@@ -13,6 +13,9 @@ public interface UserStorage {
 
     public User updateUser(User user);
 
-    public Map<Integer, User> findAllUsersHashMap();
+    public Map<Integer, User> getAllUsers();
 
+    public User findById(Integer id);
+
+    public boolean containsUser(Integer id);
 }

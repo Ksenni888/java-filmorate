@@ -27,6 +27,6 @@ public class User {
     @Past(message = "The date of birth cannot be in the future")
     private LocalDate birthday;
 
-    private Set<Integer> friendsId = new HashSet<>();
+    private Set<Integer> friendIds = new HashSet<>();
 
 }

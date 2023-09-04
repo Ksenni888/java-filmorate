@@ -14,11 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
 import ru.yandex.practicum.filmorate.service.FilmService;
-import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 @RestController
@@ -26,16 +24,14 @@ import java.util.Set;
 public class FilmController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
-    private final FilmStorage filmStorage;
 
-    public FilmController(FilmService filmService, FilmStorage filmStorage) {
+    public FilmController(FilmService filmService) {
         this.filmService = filmService;
-        this.filmStorage = filmStorage;
     }
 
     @GetMapping
     public List<Film> getFilms() {
-        return filmStorage.findAllFilms();
+        return filmService.findAllFilms();
     }
 
     @GetMapping("/{id}")
@@ -47,14 +43,12 @@ public class FilmController {
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
         log.info("Create new film");
-        return filmStorage.create(film);
+        return filmService.create(film);
     }
 
     @PutMapping("/{id}/like/{userId}")
     @ResponseBody
-    public Set<Integer> likesFilm(@PathVariable Map<String, String> pathVarsMap) {
-        int id = Integer.parseInt(pathVarsMap.get("id"));
-        int userId = Integer.parseInt(pathVarsMap.get("userId"));
+    public Set<Integer> likesFilm(@PathVariable Integer id, @PathVariable Integer userId ) {
         log.info("Like the movie");
         return filmService.likesFilm(id, userId);
     }
@@ -62,22 +56,20 @@ public class FilmController {
     @PutMapping
     public Film rewriteFilm(@Valid @RequestBody Film film) {
         log.info("Rewrite the movie");
-        return filmStorage.rewriteFilm(film);
+        return filmService.rewriteFilm(film);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
     @ResponseBody
-    public Set<Integer> deliteLike(@PathVariable Map<String, String> pathVarsMap) {
-        int id = Integer.parseInt(pathVarsMap.get("id"));
-        int userId = Integer.parseInt(pathVarsMap.get("userId"));
+    public Set<Integer> deliteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Delete like the movie");
         return filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
     @ResponseBody
-    public List<Film> bestFilms(@RequestParam(defaultValue = "10", required = false) Integer count) {
-        if (count == null) return filmService.bestFilms(10);
+    public List<Film> bestFilms(@RequestParam(defaultValue = "10") Integer count) {
+        if (count == 0) {return filmService.bestFilms(10);}
         log.info("Show best films");
         return filmService.bestFilms(count);
     }
