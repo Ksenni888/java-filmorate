@@ -2,66 +2,73 @@ package ru.yandex.practicum.filmorate.controller;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.bind.annotation.*;
-import ru.yandex.practicum.filmorate.exeption.ValidationException;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Film;
+import ru.yandex.practicum.filmorate.service.FilmService;
 
 import javax.validation.Valid;
-import java.time.LocalDate;
-import java.util.HashMap;
 import java.util.List;
 
 @RestController
 @RequestMapping("/films")
 public class FilmController {
-    private final HashMap<Integer, Film> films = new HashMap<>();
-    private final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private int unicId;
-    private static final String FILM_BIRTHDAY = "1895-12-28";
+    private static final Logger log = LoggerFactory.getLogger(FilmController.class);
+    private final FilmService filmService;
+
+    public FilmController(FilmService filmService) {
+        this.filmService = filmService;
+    }
 
     @GetMapping
     public List<Film> getFilms() {
-        return List.copyOf(films.values());
+        return filmService.findAllFilms();
+    }
+
+    @GetMapping("/{id}")
+    public Film getFilmsById(@PathVariable Integer id) {
+        log.info("Get information about film id=" + id);
+        return filmService.getFilmsById(id);
     }
 
     @PostMapping
     public Film create(@Valid @RequestBody Film film) {
+        log.info("Create new film");
+        return filmService.create(film);
+    }
 
-        if (film.getId() != 0) {
-            log.warn("ID must be empty");
-            throw new ValidationException("ID must be empty");
-        }
-
-        if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
-            log.warn("Time of release must be after" + FILM_BIRTHDAY);
-            throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
-        }
-
-        film.setId(generateId());
-        films.put(film.getId(), film);
-        log.info("The film is recorded {}", film);
-        return film;
+    @PutMapping("/{id}/like/{userId}")
+    @ResponseBody
+    public void likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+        log.info("Like the movie");
+        filmService.likeFilm(id, userId);
     }
 
     @PutMapping
-    public Film rewriteFilm(@Valid @RequestBody Film film) {
-        if (!films.containsKey(film.getId())) {
-            log.warn("There is no such film in the database");
-            throw new ValidationException("There is no such film in the database");
-        }
-
-        if (film.getReleaseDate().isBefore(LocalDate.parse(FILM_BIRTHDAY))) {
-            log.warn("Time of release must be after" + FILM_BIRTHDAY);
-            throw new ValidationException("Time of release must be after" + FILM_BIRTHDAY);
-        }
-
-        films.replace(film.getId(), film);
-        log.info("Info about film updated {}", film);
-        return film;
+    public Film updateFilm(@Valid @RequestBody Film film) {
+        log.info("Rewrite the movie");
+        return filmService.rewriteFilm(film);
     }
 
-    private int generateId() {
-        return ++unicId;
+    @DeleteMapping("/{id}/like/{userId}")
+    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+        log.info("Delete like the movie");
+        filmService.deleteLike(id, userId);
+    }
+
+    @GetMapping("/popular")
+    @ResponseBody
+    public List<Film> bestFilms(@RequestParam(defaultValue = "10") Integer count) {
+        log.info("Show best films");
+        return filmService.bestFilms(count);
     }
 }
 
