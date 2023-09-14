@@ -62,7 +62,7 @@ public class FilmService {
         return filmStorage.findById(id);
     }
 
-    public Set<Integer> likesFilm(Integer id, Integer userId) {
+    public void likeFilm(Integer id, Integer userId) {
         if (!filmStorage.containsFilm(id)) {
             throw new NoInformationFoundException(String.format("Film with id=%d not found", id));
         }
@@ -71,10 +71,9 @@ public class FilmService {
         }
         filmStorage.findById(id).getLikeIds().add(userId);
         log.info("Liked the movie");
-        return filmStorage.findById(id).getLikeIds();
     }
 
-    public Set<Integer> deleteLike(Integer id, Integer userId) {
+    public void deleteLike(Integer id, Integer userId) {
         if (id <= 0 || userId <= 0) {
             throw new ObjectNotFoundException("Film's and User's id must be over 0");
         }
@@ -87,7 +86,6 @@ public class FilmService {
         }
         filmStorage.findById(id).getLikeIds().remove(userId);
         log.info("Like deleted");
-        return filmStorage.findById(id).getLikeIds();
     }
 
     public List<Film> bestFilms(Integer count) {

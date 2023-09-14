@@ -10,12 +10,15 @@ import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
+
     private final UserStorage userStorage;
 
     @Autowired
@@ -60,7 +63,7 @@ public class UserService {
         return userStorage.findById(id);
     }
 
-    public List<User> addFriends(Integer id, Integer friendId) {
+    public void addFriends(Integer id, Integer friendId) {
         if (id <= 0 || friendId <= 0) {
             throw new ObjectNotFoundException("User's and friend's id must be over 0");
         }
@@ -70,18 +73,9 @@ public class UserService {
         if (!userStorage.containsUser(friendId)) {
             throw new NoInformationFoundException(String.format("User c id=%d not exist", friendId));
         }
-
         userStorage.findById(id).getFriendIds().add(friendId);
         userStorage.findById(friendId).getFriendIds().add(id);
-
-        List<User> userAddFriend = new ArrayList<>();
-        for (User u : userStorage.findAllUsers()) {
-            if (u.getId() == friendId) {
-                userAddFriend.add(u);
-            }
-        }
         log.info("Friend added");
-        return userAddFriend;
     }
 
     public void deleteFriendsById(Integer id, Integer friendId) {
@@ -108,15 +102,11 @@ public class UserService {
         if (!userStorage.containsUser(id)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", id));
         }
-
-        List<User> userFriends = new ArrayList<>();
-        for (Integer i : userStorage.findById(id).getFriendIds()) {
-            if (userStorage.containsUser(i)) {
-                userFriends.add(userStorage.findById(i));
-            }
-        }
         log.info("List of friends done");
-        return userFriends;
+        return userStorage.findById(id).getFriendIds().stream()
+                .filter(userStorage::containsUser)
+                .map(userStorage::findById)
+                .collect(Collectors.toList());
     }
 
     public List<User> commonFriends(Integer id, Integer otherId) {
@@ -129,19 +119,11 @@ public class UserService {
         if (!userStorage.containsUser(otherId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", otherId));
         }
-        List<Integer> numberCommonFriends = new ArrayList<>();
-        for (Integer friend : userStorage.findById(id).getFriendIds()) {
-            if (userStorage.findById(otherId).getFriendIds().contains(friend)) {
-                numberCommonFriends.add(friend);
-            }
-        }
-        List<User> commonFriends = new ArrayList<>();
-        for (Integer f : numberCommonFriends) {
-            if (userStorage.containsUser(f)) {
-                commonFriends.add(userStorage.findById(f));
-            }
-        }
         log.info("List of common friends done");
-        return commonFriends;
+        Set<Integer> friendsFirstUser = new HashSet<>(userStorage.findById(id).getFriendIds());
+        friendsFirstUser.retainAll(userStorage.findById(otherId).getFriendIds());
+        return friendsFirstUser.stream()
+                .map(userStorage::findById)
+                .collect(Collectors.toList());
     }
 }

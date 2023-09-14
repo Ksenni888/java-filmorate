@@ -48,30 +48,26 @@ public class FilmController {
 
     @PutMapping("/{id}/like/{userId}")
     @ResponseBody
-    public Set<Integer> likesFilm(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void likeFilm(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Like the movie");
-        return filmService.likesFilm(id, userId);
+        filmService.likeFilm(id, userId);
     }
 
     @PutMapping
-    public Film rewriteFilm(@Valid @RequestBody Film film) {
+    public Film updateFilm(@Valid @RequestBody Film film) {
         log.info("Rewrite the movie");
         return filmService.rewriteFilm(film);
     }
 
     @DeleteMapping("/{id}/like/{userId}")
-    @ResponseBody
-    public Set<Integer> deliteLike(@PathVariable Integer id, @PathVariable Integer userId) {
+    public void deleteLike(@PathVariable Integer id, @PathVariable Integer userId) {
         log.info("Delete like the movie");
-        return filmService.deleteLike(id, userId);
+        filmService.deleteLike(id, userId);
     }
 
     @GetMapping("/popular")
     @ResponseBody
     public List<Film> bestFilms(@RequestParam(defaultValue = "10") Integer count) {
-        if (count == 0) {
-            return filmService.bestFilms(10);
-        }
         log.info("Show best films");
         return filmService.bestFilms(count);
     }

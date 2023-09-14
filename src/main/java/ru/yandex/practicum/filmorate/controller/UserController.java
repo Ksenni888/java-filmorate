@@ -21,6 +21,7 @@ import java.util.List;
 @RequestMapping("/users")
 public class UserController {
     private static final Logger log = LoggerFactory.getLogger(UserController.class);
+
     private final UserService userService;
 
     public UserController(UserService userService) {
@@ -65,10 +66,9 @@ public class UserController {
     }
 
     @PutMapping("/{id}/friends/{friendId}")
-    @ResponseBody
-    public List<User> addFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
+    public void addFriends(@PathVariable Integer id, @PathVariable Integer friendId) {
         log.info("Add friend");
-        return userService.addFriends(id, friendId);
+        userService.addFriends(id, friendId);
     }
 
     @DeleteMapping("/{id}/friends/{friendId}")
