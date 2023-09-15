@@ -34,3 +34,10 @@ FROM film
 LEFT OUTER JOIN genre ON genre.film_id = film.film_id
 GROUP BY genre.genre_name, film.name
 ORDER BY film.name;
+
+SELECT
+users.user_id,
+friendship.friend_id,
+friendship.status
+FROM users
+LEFT JOIN friendship ON users.user_id = friendship.user_id;
