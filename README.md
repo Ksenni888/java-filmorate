@@ -1,4 +1,5 @@
 # java-filmorate
+SQL trainer http://sqlfiddle.com/#!17/9b6a67/1
 Template repository for Filmorate project.
 ![Screenshot of a scheme filmorate.](https://raw.githubusercontent.com/Ksenni888/java-filmorate/main/scheme-filmorate.jpg)
 
