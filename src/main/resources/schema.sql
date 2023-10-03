@@ -40,7 +40,6 @@ foreign key (user_id) references users(user_id)
 CREATE TABLE film_genre (
 film_id int NOT NULL,
 genre_id int NOT NULL,
---PRIMARY KEY (film_id, genre_id),
 foreign key (film_id) references films(film_id),
 foreign key (genre_id) references genre(genre_id)
 );
