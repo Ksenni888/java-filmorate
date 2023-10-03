@@ -14,11 +14,11 @@ public class Mpa {
         this.name = name;
     }
 
-   public Mpa (int id) {
+   public Mpa(int id) {
       this.id = id;
   }
 
-    public Mpa () {
+    public Mpa() {
 
     }
 
