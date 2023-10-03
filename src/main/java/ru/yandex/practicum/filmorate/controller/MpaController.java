@@ -34,6 +34,4 @@ public class MpaController {
         log.info("Get mpa by id=" + id);
         return filmDbStorage.getMpaById(id);
     }
-
-
 }
