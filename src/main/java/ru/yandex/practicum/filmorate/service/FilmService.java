@@ -98,10 +98,10 @@ public class FilmService {
         return filmStorage.bestFilms(count);
     }
 
-    public List<Genre> getGenres(){
+    public List<Genre> getGenres() {
         return filmStorage.getGenres();
     }
-    public Genre getGenreById(Integer id){
+    public Genre getGenreById(Integer id) {
         if (!filmStorage.containsGenre(id)) {
             throw new ObjectNotFoundException(String.format("Genre with id=%d not found", id));
         }

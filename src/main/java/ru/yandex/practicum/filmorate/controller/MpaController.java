@@ -30,7 +30,7 @@ public class MpaController {
     }
     @GetMapping("/{id}")
     @ResponseBody
-    public Mpa getMpaById(@PathVariable Integer id){
+    public Mpa getMpaById(@PathVariable Integer id) {
         log.info("Get mpa by id=" + id);
         return filmDbStorage.getMpaById(id);
     }

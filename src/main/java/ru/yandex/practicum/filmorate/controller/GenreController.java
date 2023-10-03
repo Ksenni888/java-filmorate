@@ -18,6 +18,7 @@ import java.util.List;
 public class GenreController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmService filmService;
+
     @Autowired
     public GenreController(FilmService filmService) {
         this.filmService = filmService;
@@ -28,9 +29,10 @@ public class GenreController {
         log.info("List of movie genre");
         return filmService.getGenres();
     }
+
     @GetMapping("/{id}")
     @ResponseBody
-    public Genre getGenreById(@PathVariable Integer id){
+    public Genre getGenreById(@PathVariable Integer id) {
         log.info("Get genre by id=" + id);
         return filmService.getGenreById(id);
     }
