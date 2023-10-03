@@ -91,7 +91,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public Film findById(Integer id) {
-
         SqlRowSet filmRows = jdbcTemplate.queryForRowSet("SELECT * FROM films WHERE film_id=?", id);
         Film film = new Film();
         if (filmRows.next()) {
@@ -125,7 +124,6 @@ public class FilmDbStorage implements FilmStorage {
 
     @Override
     public void deleteLike(Integer id, Integer userId) {
-
         jdbcTemplate.update(
                 "DELETE FROM likeIds WHERE film_id=? and user_id=?",
                 id, userId);

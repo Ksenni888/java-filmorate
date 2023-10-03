@@ -101,6 +101,7 @@ public class FilmService {
     public List<Genre> getGenres() {
         return filmStorage.getGenres();
     }
+
     public Genre getGenreById(Integer id) {
         if (!filmStorage.containsGenre(id)) {
             throw new ObjectNotFoundException(String.format("Genre with id=%d not found", id));
