@@ -55,9 +55,9 @@ public class FilmDbStorage implements FilmStorage {
                 "INSERT INTO films (film_id, film_name, description, releaseDate, duration, mpa) VALUES (?, ?, ?, ?, ?, ?)",
                 idCount, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId());
 
-        int[] genres_ids = film.getGenres().stream().mapToInt(Genre::getId).toArray();
+        int[] genresIds = film.getGenres().stream().mapToInt(Genre::getId).toArray();
 
-        for (int j : genres_ids) {
+        for (int j : genresIds) {
             jdbcTemplate.update(
                     "INSERT INTO film_genre(film_id, genre_id) values (?,?)",
                     film.getId(), j);
