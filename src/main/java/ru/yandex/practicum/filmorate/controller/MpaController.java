@@ -18,6 +18,7 @@ import java.util.List;
 public class MpaController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
     private final FilmDbStorage filmDbStorage;
+
     @Autowired
     public MpaController(FilmDbStorage filmDbStorage) {
         this.filmDbStorage = filmDbStorage;
@@ -28,6 +29,7 @@ public class MpaController {
         log.info("List of movie genre");
         return filmDbStorage.getMpa();
     }
+
     @GetMapping("/{id}")
     @ResponseBody
     public Mpa getMpaById(@PathVariable Integer id) {
