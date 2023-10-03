@@ -41,7 +41,7 @@ public class UserService {
     public User updateUser(User user) {
         if (!userStorage.containsUser(user.getId())) {
            throw new ObjectNotFoundException("There is no such user in the database");
-       }
+        }
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("The login cannot contain spaces");
         }

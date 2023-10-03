@@ -35,8 +35,8 @@ public class FilmDbStorage implements FilmStorage {
             film.setDescription(filmRows.getString("description"));
             film.setReleaseDate(Objects.requireNonNull(filmRows.getDate("releaseDate")).toLocalDate());
             film.setDuration(filmRows.getInt("duration"));
-            Integer mpa_id = filmRows.getInt("mpa");
-            film.setMpa(findMpaFilm(mpa_id));
+            Integer mpaId = filmRows.getInt("mpa");
+            film.setMpa(findMpaFilm(mpaId));
             film.setGenres(findGenresFilm(film));
             film.setRate(findRateFilm(film));
             filmBack.add(film);
@@ -62,8 +62,8 @@ public class FilmDbStorage implements FilmStorage {
                     "INSERT INTO film_genre(film_id, genre_id) values (?,?)",
                     film.getId(), j);
         }
-        Integer mpa_id = film.getMpa().getId();
-        film.setMpa(findMpaFilm(mpa_id));
+        Integer mpaId = film.getMpa().getId();
+        film.setMpa(findMpaFilm(mpaId));
         film.setGenres(findGenresFilm(film));
         return film;
     }
@@ -73,17 +73,17 @@ public class FilmDbStorage implements FilmStorage {
         String sqlQuery = "UPDATE films SET film_name=?, description=?, releaseDate=?, duration=?, mpa=? WHERE film_id=? ";
         jdbcTemplate.update(sqlQuery, film.getName(), film.getDescription(), film.getReleaseDate(), film.getDuration(), film.getMpa().getId(), film.getId());
 
-        int[] genres_ids = film.getGenres().stream().mapToInt(Genre::getId).toArray();
+        int[] genresIds = film.getGenres().stream().mapToInt(Genre::getId).toArray();
 
         jdbcTemplate.update("DELETE FROM film_genre WHERE film_id=?", film.getId());
 
-        for (int j : genres_ids) {
+        for (int j : genresIds) {
             jdbcTemplate.update(
                     "INSERT INTO film_genre(film_id, genre_id) VALUES (?,?)",
                     film.getId(), j);
         }
-        Integer mpa_id = film.getMpa().getId();
-        film.setMpa(findMpaFilm(mpa_id));
+        Integer mpaId = film.getMpa().getId();
+        film.setMpa(findMpaFilm(mpaId));
         film.setGenres(findGenresFilm(film));
         film.setRate(findRateFilm(film));
         return film;
@@ -100,8 +100,8 @@ public class FilmDbStorage implements FilmStorage {
             film.setDescription(filmRows.getString("description"));
             film.setReleaseDate(Objects.requireNonNull(filmRows.getDate("releaseDate")).toLocalDate());
             film.setDuration(filmRows.getInt("duration"));
-            Integer mpa_id = filmRows.getInt("mpa");
-            film.setMpa(findMpaFilm(mpa_id));
+            Integer mpaId = filmRows.getInt("mpa");
+            film.setMpa(findMpaFilm(mpaId));
             film.setGenres(findGenresFilm(film));
             film.setRate(findRateFilm(film));
         }
@@ -143,8 +143,8 @@ public class FilmDbStorage implements FilmStorage {
             film.setDescription(filmRows.getString("description"));
             film.setReleaseDate(Objects.requireNonNull(filmRows.getDate("releaseDate")).toLocalDate());
             film.setDuration(filmRows.getInt("duration"));
-            Integer mpa_id = filmRows.getInt("mpa");
-            film.setMpa(findMpaFilm(mpa_id));
+            Integer mpaId = filmRows.getInt("mpa");
+            film.setMpa(findMpaFilm(mpaId));
             film.setGenres(findGenresFilm(film));
             film.setRate(findRateFilm(film));
             filmBack.add(film);
@@ -228,8 +228,8 @@ public class FilmDbStorage implements FilmStorage {
         while (genresRequest.next()) {
             Genre genre = new Genre();
             genre.setId(genresRequest.getInt("genre_id"));
-            Integer genre_id = genresRequest.getInt("genre_id");
-            SqlRowSet requestGenreName = jdbcTemplate.queryForRowSet("SELECT genre_name FROM genre WHERE genre_id=?", genre_id);
+            Integer genreId = genresRequest.getInt("genre_id");
+            SqlRowSet requestGenreName = jdbcTemplate.queryForRowSet("SELECT genre_name FROM genre WHERE genre_id=?", genreId);
             if (requestGenreName.next()) {
                 genre.setName(requestGenreName.getString("genre_name"));
                 if (genresBack.contains(genre)) {
