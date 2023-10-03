@@ -6,6 +6,7 @@ import lombok.Data;
 public class Mpa {
 
     private int id;
+
     private String name;
 
     public Mpa(int id, String name) {
@@ -17,6 +18,8 @@ public class Mpa {
       this.id = id;
   }
 
-    public Mpa () {}
+    public Mpa () {
+
+    }
 
 }
