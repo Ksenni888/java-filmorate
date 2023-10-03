@@ -211,8 +211,8 @@ public class FilmDbStorage implements FilmStorage {
         return i;
     }
 
-    public Mpa findMpaFilm(Integer mpa_id) {
-        SqlRowSet mpaRequest = jdbcTemplate.queryForRowSet("SELECT * FROM mpa WHERE mpa_id=?", mpa_id);
+    public Mpa findMpaFilm(Integer mpaId) {
+        SqlRowSet mpaRequest = jdbcTemplate.queryForRowSet("SELECT * FROM mpa WHERE mpa_id=?", mpaId);
         Mpa mpa = new Mpa();
         if (mpaRequest.next()) {
             mpa.setName(mpaRequest.getString("mpa_name"));
