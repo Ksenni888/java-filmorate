@@ -15,4 +15,13 @@ public interface UserStorage {
     public User findById(Integer id);
 
     public boolean containsUser(Integer id);
+
+    public void addFriends(Integer id, Integer friendId);
+
+    public void deleteFriendsById(Integer id, Integer friendId);
+
+    public List<User> getFriends(Integer id);
+
+    public List<User> commonFriends(Integer id, Integer otherId);
+
 }
