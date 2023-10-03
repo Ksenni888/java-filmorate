@@ -27,7 +27,6 @@ class FilmoRateApplicationTests {
 
     @Test
     public void test() throws Exception {
-
         assertThat(userController).isNotNull();
     }
 
