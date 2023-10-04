@@ -149,7 +149,8 @@ public class FilmDbStorage implements FilmStorage {
         while (rateRows.next()) {
             i++;
        }
-        return i;}
+        return i;
+    }
 
     public Mpa findMpaFilm(Integer mpaId) {
         SqlRowSet mpaRequest = jdbcTemplate.queryForRowSet("SELECT * FROM mpa WHERE mpa_id=?", mpaId);

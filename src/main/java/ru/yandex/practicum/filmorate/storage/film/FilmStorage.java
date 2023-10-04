@@ -21,5 +21,4 @@ public interface FilmStorage {
     public void deleteLike(Integer id, Integer userId);
 
     public List<Film> bestFilms(Integer count);
-
 }

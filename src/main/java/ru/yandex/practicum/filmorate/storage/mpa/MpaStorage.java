@@ -11,5 +11,4 @@ public interface MpaStorage {
     public Mpa getMpaById(Integer id);
 
     public boolean containsMpa(Integer id);
-
 }
