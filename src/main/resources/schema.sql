@@ -1,5 +1,3 @@
---DROP TABLE IF EXISTS mpa, films, users, like_ids, genre, film_genre, friendship CASCADE;
-
 CREATE TABLE mpa (
 mpa_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
 mpa_name varchar(200) NOT NULL
