@@ -1,7 +1,6 @@
 package ru.yandex.practicum.filmorate.storage.film;
 
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 
 import java.util.List;
 
@@ -23,9 +22,4 @@ public interface FilmStorage {
 
     public List<Film> bestFilms(Integer count);
 
-    public List<Genre> getGenres();
-
-    public Genre getGenreById(Integer id);
-
-    public boolean containsGenre(Integer id);
 }

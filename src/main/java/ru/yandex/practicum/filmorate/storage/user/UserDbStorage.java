@@ -1,10 +1,12 @@
 package ru.yandex.practicum.filmorate.storage.user;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.support.rowset.SqlRowSet;
 import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
@@ -12,16 +14,12 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
-@Component("userDbStorage")
+@Repository
+@RequiredArgsConstructor
 public class UserDbStorage implements UserStorage {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
-    private final JdbcTemplate jdbcTemplate;
-    private final UserStorage userStorage;
 
-    public UserDbStorage(JdbcTemplate jdbcTemplate, UserStorage userStorage) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.userStorage = userStorage;
-    }
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public List<User> findAllUsers() {
@@ -29,11 +27,7 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
         while (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getInt("user_id"));
-            user.setEmail(userRows.getString("email"));
-            user.setLogin(userRows.getString("login"));
-            user.setName(userRows.getString("user_name"));
-            user.setBirthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
+            userParameters(user, userRows);
             userBack.add(user);
         }
         return userBack;
@@ -65,12 +59,8 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id=?", id);
         User userBack = new User();
         if (userRows.next()) {
-            userBack.setId(userRows.getInt("user_id"));
-            userBack.setEmail(userRows.getString("email"));
-            userBack.setLogin(userRows.getString("login"));
-            userBack.setName(userRows.getString("user_name"));
-            userBack.setBirthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
-            userStorage.updateUser(userBack);
+            userParameters(userBack, userRows);
+            this.updateUser(userBack);
         }
         return userBack;
     }
@@ -78,10 +68,7 @@ public class UserDbStorage implements UserStorage {
     @Override
     public boolean containsUser(Integer id) {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id=?", id);
-        if (userRows.next()) {
-            return true;
-        }
-        return false;
+        return userRows.next();
     }
 
     public void addFriends(Integer id, Integer friendId) {
@@ -101,11 +88,7 @@ public class UserDbStorage implements UserStorage {
         SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id in (SELECT friend_id FROM friendship WHERE user_id=?)", id);
         while (userRows.next()) {
             User user = new User();
-            user.setId(userRows.getInt("user_id"));
-            user.setEmail(userRows.getString("email"));
-            user.setLogin(userRows.getString("login"));
-            user.setName(userRows.getString("user_name"));
-            user.setBirthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
+            userParameters(user, userRows);
             friendsBack.add(user);
         }
         return friendsBack;
@@ -116,5 +99,13 @@ public class UserDbStorage implements UserStorage {
         List<User> secondOtherId = getFriends(otherId);
         firstId.retainAll(secondOtherId);
         return firstId;
+    }
+
+    public void userParameters(User user, SqlRowSet userRows) {
+        user.setId(userRows.getInt("user_id"));
+        user.setEmail(userRows.getString("email"));
+        user.setLogin(userRows.getString("login"));
+        user.setName(userRows.getString("user_name"));
+        user.setBirthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
     }
 }

@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 import ru.yandex.practicum.filmorate.model.Mpa;
-import ru.yandex.practicum.filmorate.storage.film.FilmDbStorage;
+import ru.yandex.practicum.filmorate.service.MpaService;
 
 import java.util.List;
 
@@ -17,23 +17,23 @@ import java.util.List;
 @RequestMapping("/mpa")
 public class MpaController {
     private static final Logger log = LoggerFactory.getLogger(FilmController.class);
-    private final FilmDbStorage filmDbStorage;
+    private final MpaService mpaService;
 
     @Autowired
-    public MpaController(FilmDbStorage filmDbStorage) {
-        this.filmDbStorage = filmDbStorage;
+    public MpaController(MpaService mpaService) {
+        this.mpaService = mpaService;
     }
 
     @GetMapping
     public List<Mpa> getMpa() {
-        log.info("List of movie genre");
-        return filmDbStorage.getMpa();
+        log.info("List of mpa");
+        return mpaService.getMpa();
     }
 
     @GetMapping("/{id}")
     @ResponseBody
     public Mpa getMpaById(@PathVariable Integer id) {
         log.info("Get mpa by id=" + id);
-        return filmDbStorage.getMpaById(id);
+        return mpaService.getMpaById(id);
     }
 }

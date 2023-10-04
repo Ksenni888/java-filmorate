@@ -1,15 +1,13 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.NoInformationFoundException;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.Film;
-import ru.yandex.practicum.filmorate.model.Genre;
 import ru.yandex.practicum.filmorate.storage.film.FilmStorage;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
@@ -17,20 +15,14 @@ import java.time.LocalDate;
 import java.util.List;
 
 @Service
-
+@RequiredArgsConstructor
 public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
     private static final String FILM_BIRTHDAY = "1895-12-28";
-    @Qualifier("filmDbStorage")
-    private final FilmStorage filmStorage;
-    @Qualifier("userDbStorage")
-    private final UserStorage userStorage;
 
-    @Autowired
-    public FilmService(@Qualifier("filmDbStorage") FilmStorage filmStorage, @Qualifier("userDbStorage") UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final FilmStorage filmStorage;
+
+    private final UserStorage userStorage;
 
     public List<Film> findAllFilms() {
         return filmStorage.findAllFilms();
@@ -96,17 +88,5 @@ public class FilmService {
             throw new ValidationException("Count must be over 0");
         }
         return filmStorage.bestFilms(count);
-    }
-
-    public List<Genre> getGenres() {
-        return filmStorage.getGenres();
-    }
-
-    public Genre getGenreById(Integer id) {
-        if (!filmStorage.containsGenre(id)) {
-            throw new ObjectNotFoundException(String.format("Genre with id=%d not found", id));
-        }
-        log.info("Info about genre id=" + id);
-        return filmStorage.getGenreById(id);
     }
 }

@@ -1,4 +1,5 @@
-DROP TABLE IF EXISTS mpa, films, users, likeIds, genre, film_genre, friendship CASCADE;
+--DROP TABLE IF EXISTS mpa, films, users, like_ids, genre, film_genre, friendship CASCADE;
+
 CREATE TABLE mpa (
 mpa_id int PRIMARY KEY AUTO_INCREMENT NOT NULL,
 mpa_name varchar(200) NOT NULL
@@ -28,14 +29,13 @@ user_name varchar(200),
 birthday date check (birthday<now())
 );
 
-CREATE TABLE likeIds (
+CREATE TABLE like_ids (
 film_id int NOT NULL,
 user_id int NOT NULL,
 PRIMARY KEY (film_id, user_id),
 foreign key (film_id) references films(film_id),
 foreign key (user_id) references users(user_id)
 );
-
 
 CREATE TABLE film_genre (
 film_id int NOT NULL,
