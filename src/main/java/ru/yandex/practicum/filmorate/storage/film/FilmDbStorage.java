@@ -148,7 +148,7 @@ public class FilmDbStorage implements FilmStorage {
         int i = 0;
         while (rateRows.next()) {
             i++;
-       }
+        }
         return i;
     }
 
