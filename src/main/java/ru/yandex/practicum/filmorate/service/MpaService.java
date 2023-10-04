@@ -9,6 +9,7 @@ import ru.yandex.practicum.filmorate.model.Mpa;
 import ru.yandex.practicum.filmorate.storage.mpa.MpaStorage;
 
 import java.util.List;
+
 @Service
 public class MpaService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
