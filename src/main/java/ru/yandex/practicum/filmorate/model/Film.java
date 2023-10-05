@@ -33,5 +33,5 @@ public class Film {
 
     private Mpa mpa;
 
-    private int rate;
+    private Integer rate;
 }

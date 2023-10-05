@@ -4,12 +4,15 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.support.rowset.SqlRowSet;
+import org.springframework.jdbc.support.GeneratedKeyHolder;
+import org.springframework.jdbc.support.KeyHolder;
 import org.springframework.stereotype.Repository;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.service.FilmService;
 
-import java.util.ArrayList;
+import java.sql.Date;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.List;
 import java.util.Objects;
 
@@ -22,27 +25,25 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public List<User> findAllUsers() {
-        List<User> userBack = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users");
-        while (userRows.next()) {
-            User user = new User();
-            userParameters(user, userRows);
-            userBack.add(user);
-        }
-        return userBack;
+        return jdbcTemplate.query(
+                "SELECT * FROM users",
+                (resultSet, rowNum) -> userParameters(resultSet));
     }
 
     @Override
     public User createUser(User user) {
-        Integer idCount = jdbcTemplate.queryForObject("SELECT count(user_id) FROM users", Integer.class);
-        if (idCount != null) {
-            idCount = idCount + 1;
-            user.setId(idCount);
-        }
-        jdbcTemplate.update(
-                "INSERT INTO users (user_id, email, login, user_name, birthday) VALUES (?, ?, ?, ?, ?)",
-                idCount, user.getEmail(), user.getLogin(), user.getName(), user.getBirthday());
+        KeyHolder keyHolder = new GeneratedKeyHolder();
+        String sqlQuery = "INSERT INTO users (email, login, user_name, birthday) VALUES (?, ?, ?, ?)";
+        jdbcTemplate.update(connection -> {
+            PreparedStatement stmt = connection.prepareStatement(sqlQuery, new String[]{"user_id"});
+            stmt.setString(1, user.getEmail());
+            stmt.setString(2, user.getLogin());
+            stmt.setString(3, user.getName());
+            stmt.setDate(4, Date.valueOf(user.getBirthday()));
+            return stmt;
+        }, keyHolder);
 
+        user.setId(Objects.requireNonNull(keyHolder.getKey()).intValue());
         return user;
     }
 
@@ -55,19 +56,16 @@ public class UserDbStorage implements UserStorage {
 
     @Override
     public User findById(Integer id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id=?", id);
-        User userBack = new User();
-        if (userRows.next()) {
-            userParameters(userBack, userRows);
-            this.updateUser(userBack);
-        }
-        return userBack;
+        return jdbcTemplate.queryForObject(
+                "SELECT * FROM users WHERE user_id=?",
+                (resultSet, rowNum) -> userParameters(resultSet), id);
     }
 
     @Override
     public boolean containsUser(Integer id) {
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id=?", id);
-        return userRows.next();
+        Long count = jdbcTemplate.queryForObject(
+                "select count(user_id) from users where user_id = ?", Long.class, id);
+        return count == 1;
     }
 
     public void addFriends(Integer id, Integer friendId) {
@@ -83,14 +81,9 @@ public class UserDbStorage implements UserStorage {
     }
 
     public List<User> getFriends(Integer id) {
-        List<User> friendsBack = new ArrayList<>();
-        SqlRowSet userRows = jdbcTemplate.queryForRowSet("SELECT * FROM users WHERE user_id in (SELECT friend_id FROM friendship WHERE user_id=?)", id);
-        while (userRows.next()) {
-            User user = new User();
-            userParameters(user, userRows);
-            friendsBack.add(user);
-        }
-        return friendsBack;
+        return this.jdbcTemplate.query(
+                "SELECT * FROM users WHERE user_id in (SELECT friend_id FROM friendship WHERE user_id=?)",
+                (resultSet, rowNum) -> userParameters(resultSet), id);
     }
 
     public List<User> commonFriends(Integer id, Integer otherId) {
@@ -100,11 +93,17 @@ public class UserDbStorage implements UserStorage {
         return firstId;
     }
 
-    public void userParameters(User user, SqlRowSet userRows) {
-        user.setId(userRows.getInt("user_id"));
-        user.setEmail(userRows.getString("email"));
-        user.setLogin(userRows.getString("login"));
-        user.setName(userRows.getString("user_name"));
-        user.setBirthday(Objects.requireNonNull(userRows.getDate("birthday")).toLocalDate());
+    public User userParameters(ResultSet resultSet) {
+        try {
+            User user = new User();
+            user.setId(resultSet.getInt("user_id"));
+            user.setEmail(resultSet.getString("email"));
+            user.setLogin(resultSet.getString("login"));
+            user.setName(resultSet.getString("user_name"));
+            user.setBirthday(resultSet.getDate("birthday").toLocalDate());
+            return user;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 }
