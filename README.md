@@ -49,3 +49,10 @@ friendship.status
 FROM users
 LEFT JOIN friendship ON users.user_id = friendship.user_id;
 ```
+
+![Static Badge](https://img.shields.io/badge/IntegelIdea-blue)
+![Static Badge](https://img.shields.io/badge/H2-green)
+![Static Badge](https://img.shields.io/badge/Postman-orange)
+
+
+
