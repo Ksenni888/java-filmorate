@@ -15,4 +15,10 @@ public interface FilmStorage {
     public Film findById(Integer id);
 
     public boolean containsFilm(Integer id);
+
+    public void likeFilm(Integer id, Integer userId);
+
+    public void deleteLike(Integer id, Integer userId);
+
+    public List<Film> bestFilms(Integer count);
 }

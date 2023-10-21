@@ -4,21 +4,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.NoInformationFoundException;
+import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
 import ru.yandex.practicum.filmorate.exeption.ValidationException;
 import ru.yandex.practicum.filmorate.model.User;
 import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService {
     private static final Logger log = LoggerFactory.getLogger(UserService.class);
-
     private final UserStorage userStorage;
 
     @Autowired
@@ -41,7 +37,7 @@ public class UserService {
 
     public User updateUser(User user) {
         if (!userStorage.containsUser(user.getId())) {
-            throw new ObjectNotFoundException("There is no such user in the database");
+           throw new ObjectNotFoundException("There is no such user in the database");
         }
         if (user.getLogin().contains(" ")) {
             throw new ValidationException("The login cannot contain spaces");
@@ -73,8 +69,7 @@ public class UserService {
         if (!userStorage.containsUser(friendId)) {
             throw new NoInformationFoundException(String.format("User c id=%d not exist", friendId));
         }
-        userStorage.findById(id).getFriendIds().add(friendId);
-        userStorage.findById(friendId).getFriendIds().add(id);
+        userStorage.addFriends(id,friendId);
         log.info("Friend added");
     }
 
@@ -88,8 +83,7 @@ public class UserService {
         if (!userStorage.containsUser(friendId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", friendId));
         }
-        userStorage.findById(id).getFriendIds().remove(friendId);
-        userStorage.findById(friendId).getFriendIds().remove(id);
+        userStorage.deleteFriendsById(id, friendId);
     }
 
     public List<User> getFriends(Integer id) {
@@ -103,10 +97,7 @@ public class UserService {
             throw new NoInformationFoundException(String.format("User with id=%d not found", id));
         }
         log.info("List of friends done");
-        return userStorage.findById(id).getFriendIds().stream()
-                .filter(userStorage::containsUser)
-                .map(userStorage::findById)
-                .collect(Collectors.toList());
+        return userStorage.getFriends(id);
     }
 
     public List<User> commonFriends(Integer id, Integer otherId) {
@@ -120,10 +111,6 @@ public class UserService {
             throw new NoInformationFoundException(String.format("User with id=%d not found", otherId));
         }
         log.info("List of common friends done");
-        Set<Integer> friendsFirstUser = new HashSet<>(userStorage.findById(id).getFriendIds());
-        friendsFirstUser.retainAll(userStorage.findById(otherId).getFriendIds());
-        return friendsFirstUser.stream()
-                .map(userStorage::findById)
-                .collect(Collectors.toList());
+        return userStorage.commonFriends(id, otherId);
     }
 }

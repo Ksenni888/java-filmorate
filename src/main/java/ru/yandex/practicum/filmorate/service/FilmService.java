@@ -1,8 +1,8 @@
 package ru.yandex.practicum.filmorate.service;
 
+import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.yandex.practicum.filmorate.exeption.NoInformationFoundException;
 import ru.yandex.practicum.filmorate.exeption.ObjectNotFoundException;
@@ -13,20 +13,16 @@ import ru.yandex.practicum.filmorate.storage.user.UserStorage;
 
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class FilmService {
     private static final Logger log = LoggerFactory.getLogger(FilmService.class);
     private static final String FILM_BIRTHDAY = "1895-12-28";
-    private final FilmStorage filmStorage;
-    private final UserStorage userStorage;
 
-    @Autowired
-    public FilmService(FilmStorage filmStorage, UserStorage userStorage) {
-        this.filmStorage = filmStorage;
-        this.userStorage = userStorage;
-    }
+    private final FilmStorage filmStorage;
+
+    private final UserStorage userStorage;
 
     public List<Film> findAllFilms() {
         return filmStorage.findAllFilms();
@@ -68,7 +64,7 @@ public class FilmService {
         if (!userStorage.containsUser(userId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", userId));
         }
-        filmStorage.findById(id).getLikeIds().add(userId);
+        filmStorage.likeFilm(id, userId);
         log.info("Liked the movie");
     }
 
@@ -83,7 +79,7 @@ public class FilmService {
         if (!userStorage.containsUser(userId)) {
             throw new NoInformationFoundException(String.format("User with id=%d not found", userId));
         }
-        filmStorage.findById(id).getLikeIds().remove(userId);
+        filmStorage.deleteLike(id, userId);
         log.info("Like deleted");
     }
 
@@ -91,9 +87,6 @@ public class FilmService {
         if (count <= 0) {
             throw new ValidationException("Count must be over 0");
         }
-        return filmStorage.findAllFilms().stream()
-                .sorted((f1, f2) -> f2.getLikeIds().size() - f1.getLikeIds().size())
-                .limit(count)
-                .collect(Collectors.toList());
+        return filmStorage.bestFilms(count);
     }
 }
